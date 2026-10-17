@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -71,7 +70,7 @@
 </div>
 <div>
 <label for="whatsapp" class="block text-xs font-semibold text-slate-300 mb-1">WhatsApp (com DDD)</label>
-<input type="tel" id="whatsapp" required placeholder="Ex: 21999999999" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition">
+<input type="tel" id="whatsapp" required placeholder="Ex: 5521999999999" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition">
 </div>
 <button type="submit" id="btnEnviar" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg text-sm transition shadow-lg shadow-blue-500/20">
                    Gerar Acesso de Teste
@@ -135,38 +134,37 @@
 </div>
 </div>
 </section>
-<!-- Script de envio para o Render -->
+<!-- Script de Integração -->
 <script>
-       document.getElementById('formTeste').addEventListener('submit', async (e) => {
+       document.getElementById('formTeste').addEventListener('submit', async function(e) {
            e.preventDefault();
            const btn = document.getElementById('btnEnviar');
            const msg = document.getElementById('mensagem');
+           const nome = document.getElementById('nome').value;
+           const whatsapp = document.getElementById('whatsapp').value;
            btn.disabled = true;
-           btn.innerText = 'Gerando teste...';
-           msg.innerText = '';
-           const dados = {
-               nome: document.getElementById('nome').value,
-               whatsapp: document.getElementById('whatsapp').value
-           };
+           btn.innerText = 'A Conectar...';
+           msg.className = "mt-4 text-center text-xs font-medium text-blue-400";
+           msg.innerText = 'A enviar pedido ao servidor...';
            try {
-               const resposta = await fetch('https://universo-play-backend.onrender.com/api/criar-cliente', {
+               const response = await fetch('https://universo-play-backend.onrender.com/api/criar-cliente', {
                    method: 'POST',
                    headers: {
                        'Content-Type': 'application/json'
                    },
-                   body: JSON.stringify(dados)
+                   body: JSON.stringify({ nome: nome, whatsapp: whatsapp })
                });
-               const resultado = await resposta.json();
-               if (resposta.ok) {
+               const data = await response.json();
+               if (response.ok) {
                    msg.className = "mt-4 text-center text-xs font-medium text-emerald-400";
-                   msg.innerText = 'Teste criado com sucesso! Verifique seu WhatsApp.';
+                   msg.innerText = 'Teste criado com sucesso!';
                } else {
                    msg.className = "mt-4 text-center text-xs font-medium text-red-400";
-                   msg.innerText = resultado.erro || 'Erro ao gerar teste.';
+                   msg.innerText = data.erro || 'Erro no servidor WManage.';
                }
-           } catch (erro) {
+           } catch (err) {
                msg.className = "mt-4 text-center text-xs font-medium text-red-400";
-               msg.innerText = 'Erro ao conectar ao servidor.';
+               msg.innerText = 'Erro ao contactar o servidor Backend.';
            } finally {
                btn.disabled = false;
                btn.innerText = 'Gerar Acesso de Teste';
