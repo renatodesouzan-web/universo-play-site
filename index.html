@@ -1,84 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universo Play - Teste Grátis</title>
+<style>
+       body {
+           font-family: Arial, sans-serif;
+           background-color: #0f172a;
+           color: #ffffff;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           min-height: 100vh;
+           margin: 0;
+           padding: 20px;
+       }
+       .container {
+           background-color: #1e293b;
+           padding: 30px;
+           border-radius: 12px;
+           box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+           max-width: 400px;
+           width: 100%;
+       }
+       h2 {
+           text-align: center;
+           color: #38bdf8;
+           margin-bottom: 20px;
+       }
+       .form-group {
+           margin-bottom: 15px;
+       }
+       label {
+           display: block;
+           margin-bottom: 5px;
+           font-size: 14px;
+       }
+       input {
+           width: 100%;
+           padding: 10px;
+           border-radius: 6px;
+           border: 1px solid #334155;
+           background-color: #0f172a;
+           color: #fff;
+           box-sizing: border-box;
+       }
+       button {
+           width: 100%;
+           padding: 12px;
+           background-color: #0284c7;
+           color: white;
+           border: none;
+           border-radius: 6px;
+           font-size: 16px;
+           font-weight: bold;
+           cursor: pointer;
+           margin-top: 10px;
+       }
+       button:hover {
+           background-color: #0369a1;
+       }
+       #mensagem {
+           margin-top: 15px;
+           text-align: center;
+           font-size: 14px;
+       }
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Solicitar Teste Grátis</h2>
+<form id="formTeste">
+<div class="form-group">
+<label for="nome">Nome Completo</label>
+<input type="text" id="nome" required placeholder="Digite seu nome">
+</div>
+<div class="form-group">
+<label for="whatsapp">WhatsApp (com DDD)</label>
+<input type="tel" id="whatsapp" required placeholder="Ex: 21999999999">
+</div>
+<button type="submit" id="btnEnviar">Gerar Acesso de Teste</button>
+</form>
+<div id="mensagem"></div>
+</div>
 <script>
-      async function gerarTeste(e) {
-          e.preventDefault();
-          const nome = document.getElementById('nome-teste').value;
-          const whatsapp = document.getElementById('zap-teste').value;
-          // Botão de loading opcional ou feedback visual
-          const botao = e.target.querySelector('button[type="submit"]');
-          const textoOriginal = botao.innerHTML;
-          botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A gerar acesso...';
-          botao.disabled = true;
-          try {
-              // Dados a enviar para o teu backend no Render (ajusta os campos conforme o WManage exigir)
-              const dadosCliente = {
-                  name: nome,
-                  whatsapp: whatsapp
-                  // Podes adicionar mais campos se o painel WManage pedir (ex: package_id, etc.)
-              };
-              const resposta = await fetch('https://universo-play-backend.onrender.com/api/criar-cliente', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify(dadosCliente)
-              });
-              const resultado = await resposta.json();
-              if (resultado.success) {
-                  // Se o WManage devolver os dados de acesso reais, mostramos aqui:
-                  // Podes adaptar conforme a estrutura exata que a API do WManage responde
-                  document.getElementById('res-user').innerText = resultado.data.username || 'Criado com sucesso';
-                  document.getElementById('res-pass').innerText = resultado.data.password || 'Verifique o painel';
-              } else {
-                  // Fallback visual caso ocorra algum erro na API
-                  document.getElementById('res-user').innerText = 'Erro ao conectar';
-                  document.getElementById('res-pass').innerText = 'Tente novamente';
-              }
-              document.getElementById('resultado-teste').classList.remove('hidden');
-          } catch (erro) {
-              console.error('Erro na requisição:', erro);
-              alert('Ocorreu um erro ao comunicar com o servidor.');
-          } finally {
-              botao.innerHTML = textoOriginal;
-              botao.disabled = false;
-          }
-      }
-      function abrirModalPix(plano, valor) {
-          document.getElementById('modal-plano-titulo').innerText = plano;
-          document.getElementById('modal-plano-valor').innerText = 'R$ ' + valor.toFixed(2);
-          document.getElementById('modal-pix').classList.remove('hidden');
-      }
-      function fecharModalPix() {
-          document.getElementById('modal-pix').classList.add('hidden');
-      }
-      function copiarPix() {
-          const input = document.getElementById('pix-copia-cola');
-          input.select();
-          document.execCommand('copy');
-          alert('Código Pix copiado!');
-      }
-      // Função para abrir/fechar a sanfona de apps grátis
-      function toggleAppsGratis() {
-          const lista = document.getElementById('lista-apps-gratis');
-          const seta = document.getElementById('seta-apps');
-          if (lista.classList.contains('hidden')) {
-              lista.classList.remove('hidden');
-              seta.classList.add('rotate-180');
-          } else {
-              lista.classList.add('hidden');
-              seta.classList.remove('rotate-180');
-          }
-      }
-      // Função de filtro em tempo real para buscar apps
-      function filtrarApps() {
-          const termo = document.getElementById('busca-app').value.toLowerCase();
-          const itens = document.querySelectorAll('.app-item');
-          itens.forEach(item => {
-              const texto = item.textContent.toLowerCase();
-              if (texto.includes(termo)) {
-                  item.style.display = 'flex';
-              } else {
-                  item.style.display = 'none';
-              }
-          });
-      }
+   document.getElementById('formTeste').addEventListener('submit', async (e) => {
+       e.preventDefault();
+       const btn = document.getElementById('btnEnviar');
+       const msg = document.getElementById('mensagem');
+       btn.disabled = true;
+       btn.innerText = 'Gerando teste...';
+       msg.innerText = '';
+       const dados = {
+           nome: document.getElementById('nome').value,
+           whatsapp: document.getElementById('whatsapp').value
+       };
+       try {
+           const resposta = await fetch('https://universo-play-backend.onrender.com/api/criar-cliente', {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/json'
+               },
+               body: JSON.stringify(dados)
+           });
+           const resultado = await resposta.json();
+           if (resposta.ok) {
+               msg.style.color = '#4ade80';
+               msg.innerText = 'Teste criado com sucesso! Verifique seu WhatsApp.';
+           } else {
+               msg.style.color = '#f87171';
+               msg.innerText = resultado.erro || 'Erro ao gerar teste.';
+           }
+       } catch (erro) {
+           msg.style.color = '#f87171';
+           msg.innerText = 'Erro ao conectar ao servidor.';
+       } finally {
+           btn.disabled = false;
+           btn.innerText = 'Gerar Acesso de Teste';
+       }
+   });
 </script>
+</body>
+</html>
