@@ -1,0 +1,84 @@
+<script>
+      async function gerarTeste(e) {
+          e.preventDefault();
+          const nome = document.getElementById('nome-teste').value;
+          const whatsapp = document.getElementById('zap-teste').value;
+          // Botão de loading opcional ou feedback visual
+          const botao = e.target.querySelector('button[type="submit"]');
+          const textoOriginal = botao.innerHTML;
+          botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A gerar acesso...';
+          botao.disabled = true;
+          try {
+              // Dados a enviar para o teu backend no Render (ajusta os campos conforme o WManage exigir)
+              const dadosCliente = {
+                  name: nome,
+                  whatsapp: whatsapp
+                  // Podes adicionar mais campos se o painel WManage pedir (ex: package_id, etc.)
+              };
+              const resposta = await fetch('https://universo-play-backend.onrender.com/api/criar-cliente', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(dadosCliente)
+              });
+              const resultado = await resposta.json();
+              if (resultado.success) {
+                  // Se o WManage devolver os dados de acesso reais, mostramos aqui:
+                  // Podes adaptar conforme a estrutura exata que a API do WManage responde
+                  document.getElementById('res-user').innerText = resultado.data.username || 'Criado com sucesso';
+                  document.getElementById('res-pass').innerText = resultado.data.password || 'Verifique o painel';
+              } else {
+                  // Fallback visual caso ocorra algum erro na API
+                  document.getElementById('res-user').innerText = 'Erro ao conectar';
+                  document.getElementById('res-pass').innerText = 'Tente novamente';
+              }
+              document.getElementById('resultado-teste').classList.remove('hidden');
+          } catch (erro) {
+              console.error('Erro na requisição:', erro);
+              alert('Ocorreu um erro ao comunicar com o servidor.');
+          } finally {
+              botao.innerHTML = textoOriginal;
+              botao.disabled = false;
+          }
+      }
+      function abrirModalPix(plano, valor) {
+          document.getElementById('modal-plano-titulo').innerText = plano;
+          document.getElementById('modal-plano-valor').innerText = 'R$ ' + valor.toFixed(2);
+          document.getElementById('modal-pix').classList.remove('hidden');
+      }
+      function fecharModalPix() {
+          document.getElementById('modal-pix').classList.add('hidden');
+      }
+      function copiarPix() {
+          const input = document.getElementById('pix-copia-cola');
+          input.select();
+          document.execCommand('copy');
+          alert('Código Pix copiado!');
+      }
+      // Função para abrir/fechar a sanfona de apps grátis
+      function toggleAppsGratis() {
+          const lista = document.getElementById('lista-apps-gratis');
+          const seta = document.getElementById('seta-apps');
+          if (lista.classList.contains('hidden')) {
+              lista.classList.remove('hidden');
+              seta.classList.add('rotate-180');
+          } else {
+              lista.classList.add('hidden');
+              seta.classList.remove('rotate-180');
+          }
+      }
+      // Função de filtro em tempo real para buscar apps
+      function filtrarApps() {
+          const termo = document.getElementById('busca-app').value.toLowerCase();
+          const itens = document.querySelectorAll('.app-item');
+          itens.forEach(item => {
+              const texto = item.textContent.toLowerCase();
+              if (texto.includes(termo)) {
+                  item.style.display = 'flex';
+              } else {
+                  item.style.display = 'none';
+              }
+          });
+      }
+</script>
